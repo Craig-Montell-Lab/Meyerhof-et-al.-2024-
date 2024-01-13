@@ -1,0 +1,44 @@
+addpath('/Users/geoffmeyerhof/Documents/MATLAB/my_funcs')
+nanidx = isnan(data.temp)|data.temp<8|data.temp>12;
+filtdata = data.temp;
+filtime = data.time;
+
+filtdata(nanidx) = [];
+filtime(nanidx) = [];
+
+
+TOI = nan;
+endTime = dateshift(filtime(1)+1,'start','minutes')
+starTime = dateshift(filtime(1),'start','minutes')
+go = 1
+counter = 1;
+TimeTable = NaT;
+while go == 1
+    [~,minidx] = min(abs(filtime-starTime));
+    TOI(counter,1) = minidx;
+    starTime = starTime + minutes(1);
+    if starTime > endTime
+        go = 0;
+    end
+        TimeTable(counter,1) = starTime;
+    counter = counter + 1 ;
+
+end
+
+AVGTemp = [];
+SEMTemp = [];
+for i = 2:length(TOI)
+    AVGTemp(i-1,1) = mean(filtdata(TOI(i-1):TOI(i)));
+    SEMTemp(i-1,1) = std(filtdata(TOI(i-1):TOI(i)))/sqrt(length(TOI(i-1):TOI(i)));
+end
+plot(AVGTemp)
+hold on
+scatter([1:length(AVGTemp)],AVGTemp)
+ylim([9,12])
+
+
+
+
+
+
+
